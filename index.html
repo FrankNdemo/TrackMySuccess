@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrackMySuccess Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">
+            <img src="c:\Users\CCS\Desktop\sem3.1\Logo.png" alt="TrackMySuccess Logo">
+            TrackMySuccess
+        </div>
+        <ul>
+            <li onclick="showLoginPopup()">Login</li>
+            <li>Dashboard</li>
+            <li>Student Reports</li>
+            <li>Performance Analytics</li>
+            <li>Settings</li>
+            <li onclick="logout()">Logout</li>
+        </ul>
+    </div>
+     <!-- Login Popup -->
+<div class="overlay" id="loginOverlay">
+    <div class="popup">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Enter Username">
+        <input type="password" id="password" placeholder="Enter Password">
+        <select id="role">
+            <option value="">Select Role</option>
+            <option value="Teacher">Teacher</option>
+            <option value="Student">Student</option>
+            <option value="Parent">Parent</option>
+        </select>
+        <button onclick="login()">Login</button>
+        <a href="#" onclick="showRegisterPopup()">Register</a>
+        <button class="cancel-btn" onclick="hidePopups()">Cancel</button>
+    </div>
+</div>
+
+<!-- Register Popup -->
+<div class="overlay" id="registerOverlay">
+    <div class="popup">
+        <h2>Register</h2>
+        <input type="text" id="newUsername" placeholder="Enter Username">
+        <input type="password" id="newPassword" placeholder="Enter Password">
+        <select id="newRole">
+            <option value="">Select Role</option>
+            <option value="Teacher">Teacher</option>
+            <option value="Student">Student</option>
+            <option value="Parent">Parent</option>
+        </select>
+        <button onclick="register()">Register</button>
+        <a href="#" onclick="showLoginPopup()">Already have an account? Login</a>
+        <button class="cancel-btn" onclick="hidePopups()">Cancel</button>
+    </div>
+</div>
+
+    <div class="main-content">
+        <header>
+            <h1 id="welcomeMessage">Welcome</h1>
+            <p></p>
+        </header>
+        <div id="dashboard"></div>
+    </div>
+    <div></div>
+    <section class="hero" id="hero">
+    <section class="hero-section">
+        <div class="text-content">
+            <h1> TrackMySuccess</h1>
+            <p>
+                TrackMySuccess is dedicated to enhancing the Competency-Based Curriculum (CBC) 
+                experience by providing a digital platform for students, teachers, and parents to 
+                track academic progress and performance effectively.
+            </p>
+            <div class="buttons">
+                <a href="#" class="btn-primary">Get Started</a>
+                <a href="#" class="btn-secondary">Learn More →</a>
+            </div>
+        </div>
+        <div class="image-content">
+            <img src="c:\xampp\htdocs\CBC\photo.png" alt="TrackMySuccess Preview">
+        </div>
+    </section>
+    <div class="features-container">
+        <div class="feature">
+            <img src="c:\xampp\htdocs\CBC\iconn1.png" alt="Personalized Learning">
+            <h3>Personalized Learning</h3>
+            <p>Tailored educational insights to track and improve student performance.</p>
+        </div>
+    
+        <div class="feature">
+            <img src="c:\xampp\htdocs\CBC\icon 5.jpg" alt="Real-Time Analytics">
+            <h3>Real-Time Analytics</h3>
+            <p>Monitor academic progress with detailed reports and analytics.</p>
+        </div>
+    
+        <div class="feature">
+            <img src="c:\xampp\htdocs\CBC\icon 4.jpg" alt="Seamless Communication">
+            <h3>Seamless Communication</h3>
+            <p>Bridge the gap between teachers, students, and parents for better learning outcomes.</p>
+        </div>
+    
+        <div class="feature">
+            <img src="c:\xampp\htdocs\CBC\icon 3.jpg" alt="Goal Tracking">
+            <h3>Goal Tracking</h3>
+            <p>Set and achieve academic milestones with structured guidance.</p>
+        </div>
+    
+        <div class="feature">
+            <img src="c:\xampp\htdocs\CBC\icon 2.jpg" alt="Secure Platform">
+            <h3>Secure Platform</h3>
+            <p>Your data is safe, ensuring a reliable and protected learning environment.</p>
+        </div>
+    </div>
+</section>
+    
+</body>
+</html>
