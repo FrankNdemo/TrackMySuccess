@@ -50,6 +50,24 @@ function register() {
         alert("Please fill in all fields.");
     }
 }
+// Function to toggle Login and Logout visibility
+function toggleAuthButtons() {
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const user = JSON.parse(localStorage.getItem("user")); // Check if user is logged in
+
+    if (user) {
+        loginBtn.style.display = "none"; // Hide Login
+        logoutBtn.style.display = "inline-block"; // Show Logout
+    } else {
+        loginBtn.style.display = "inline-block"; // Show Login
+        logoutBtn.style.display = "none"; // Hide Logout
+    }
+}
+
+// Call toggleAuthButtons when page loads
+document.addEventListener("DOMContentLoaded", toggleAuthButtons);
 
 // Login Function
 function login() {
@@ -62,7 +80,8 @@ function login() {
         localStorage.setItem("user", JSON.stringify({ name: username, role: role }));
         alert("Login successful!");
         hidePopups();
-        location.reload();
+        toggleAuthButtons(); // Update UI after login
+        location.reload(); //refresh
     } else {
         alert("Invalid credentials! Please check your username, password, or role.");
     }
@@ -72,8 +91,11 @@ function login() {
 function logout() {
     localStorage.removeItem("user");
     alert("Logged out successfully 🖐");
-    location.reload();
+    toggleAuthButtons(); // Update UI after logout
+    location.reload(); //refresh the page
 }
+// Run on page load to set the correct state
+toggleAuthButtons();
 
 // Check if user is logged in
 const user = JSON.parse(localStorage.getItem("user")) || { name: "Guest", role: "" };
@@ -128,9 +150,34 @@ if (user.role === "Teacher") {
                 datasets: [{
                     label: 'Student Performance',
                     data: [85, 78, 92, 75, 88, 80],
-                    backgroundColor: 'blue'
+                    backgroundColor: 'green'
                 }]
             }
         });
     }
 }
+document.addEventListener("DOMContentLoaded", function () {
+    let activeGroup = 1; // Start with the first group
+
+    function switchFeatures() {
+        const group1 = document.querySelector(".group-1");
+        const group2 = document.querySelector(".group-2");
+
+        if (activeGroup === 1) {
+            group1.style.animation = "slide-left 1s forwards";
+            group2.style.animation = "slide-right 1s forwards";
+            activeGroup = 2;
+        } else {
+            group1.style.animation = "slide-right 1s forwards";
+            group2.style.animation = "slide-left 1s forwards";
+            activeGroup = 1;
+        }
+
+        setTimeout(() => {
+            group1.style.transform = activeGroup === 1 ? "translateX(0)" : "translateX(-100%)";
+            group2.style.transform = activeGroup === 1 ? "translateX(100%)" : "translateX(0)";
+        }, 1000);
+    }
+
+    setInterval(switchFeatures, 18000); // Change every 18 seconds
+});
