@@ -15,12 +15,12 @@
             TrackMySuccess
         </div>
         <ul>
-            <li onclick="showLoginPopup()">Login</li>
+            <li id="loginBtn" onclick="showLoginPopup()">Login</li>
             <li>Dashboard</li>
             <li>Student Reports</li>
             <li>Performance Analytics</li>
             <li>Settings</li>
-            <li onclick="logout()">Logout</li>
+            <li id="logoutBtn" onclick="logout()" style="display: none;">Logout</li>
         </ul>
     </div>
      <!-- Login Popup -->
@@ -77,7 +77,7 @@
                 track academic progress and performance effectively.
             </p>
             <div class="buttons">
-                <a href="#" class="btn-primary">Get Started</a>
+                <a href="#" onclick="showRegisterPopup()" class="btn-primary">Get Started</a>
                 <a href="#" class="btn-secondary">Learn More →</a>
             </div>
         </div>
@@ -86,6 +86,7 @@
         </div>
     </section>
     <div class="features-container">
+      <div class="feature-group group-1">
         <div class="feature">
             <img src="c:\xampp\htdocs\CBC\iconn1.png" alt="Personalized Learning">
             <h3>Personalized Learning</h3>
@@ -103,7 +104,8 @@
             <h3>Seamless Communication</h3>
             <p>Bridge the gap between teachers, students, and parents for better learning outcomes.</p>
         </div>
-    
+      </div>
+      <div class="feature-group group-2">
         <div class="feature">
             <img src="c:\xampp\htdocs\CBC\icon 3.jpg" alt="Goal Tracking">
             <h3>Goal Tracking</h3>
@@ -115,6 +117,7 @@
             <h3>Secure Platform</h3>
             <p>Your data is safe, ensuring a reliable and protected learning environment.</p>
         </div>
+      </div>
     </div>
 </section>
     
