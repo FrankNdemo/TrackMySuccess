@@ -1,1854 +1,988 @@
-/* Global Styles */
-:root {
-    --primary-color: #1c591f;
-    --primary-light: #4a9e47;
-    --primary-dark: #005005;
-    --secondary-color: #edf905;
-    --text-light: #ffffff;
-    --text-dark: #1E1E1E;
-    --text-gray: #555555;
-    --background-light: #f5f5f5;
-    --border-color: #e0e0e0;
-    --success-color: #38903b;
-    --warning-color: #FFC107;
-    --danger-color: #F44336;
-    --info-color: #2196F3;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrackMySuccess Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo">
+            <img src="logo.jpg" alt="TrackMySuccess Logo">
+        </div>
+        <ul>
+            <li id="homeLink">Home</li>
+            <li id="aboutLink">About</li>
+            <li id="analyticsLink">Analytics</li>
+            <li id="contactLink">Contact</li>
+            <li id="loginBtn" onclick="showLoginPopup()">Login</li>
+            <li id="logoutBtn" onclick="logout()" style="display: none;">Logout</li>
+        </ul>
+    </div>
 
-*,
-*:before,
-*:after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+    <section class="pop">
+        <!-- Login Popup -->
+        <div class="overlay" id="loginOverlay">
+            <div class="popup-container">
+                <div class="popup-image">
+                    <img src="track.png" alt="Login Image">
+                </div>
+                <div class="popup">
+                    <h2>Login</h2>
+                    <input type="text" id="username" placeholder="Enter Username">
+                    <input type="password" id="password" placeholder="Enter Password">
+                    <select id="role">
+                        <option value="">Select Role</option>
+                        <option value="Teacher">Teacher</option>
+                        <option value="Student">Student</option>
+                        <option value="Parent">Parent</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                    <button onclick="login()">Login</button>
+                    <a  class="reg" href="#" onclick="showRegisterPopup()">Register</a>
+                    <button class="cancel-btn" onclick="hidePopups()">Cancel</button>
+                </div>
+            </div> 
+        </div>
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--background-light);
-    color: var(--text-dark);
-    text-align: center; /* Centering content */
-}
+        <!-- Register Popup -->
+        <div class="overlay" id="registerOverlay">
+            <div class="popup-container">
+                <div class="popup-image">
+                    <img src="track.png" alt="Register Image">
+                </div>
+                <div class="popup">
+                    <h2>Register</h2>
+                    <input type="text" id="newUsername" placeholder="Enter Username">
+                    <input type="password" id="newPassword" placeholder="Enter Password">
+                    <select id="newRole">
+                        <option value="">Select Role</option>
+                        <option value="Teacher">Teacher</option>
+                        <option value="Student">Student</option>
+                        <option value="Parent">Parent</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                    <button onclick="register()">Register</button>
+                    <a class="reg" href="#" onclick="showLoginPopup()">Already have an account? Login</a>
+                    <button class="cancel-btn" onclick="hidePopups()">Cancel</button>
+                </div>
+            </div>    
+        </div>
+    </section>
 
-/* Navbar Styles */
-.navbar {
-    background-color: #034108;
-    color: var(--text-light);
-    padding: 0.8rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: relative;
-    z-index: 1000;
-}
+    <!-- Main Content -->
+    <div class="app-container">
+        <!-- Sidebar (visible after login) -->
+        <div class="sidebar" id="sidebar">
+            <div class="user-info" id="userInfo">
+                <div class="avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <p id="sidebarUsername">Username</p>
+                <p id="sidebarRole">Role</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </li>
+                <li class="menu-item" data-section="profile">
+                    <i class="fas fa-user"></i> Profile
+                </li>
+                <li class="menu-item student-only" data-section="assignments">
+                    <i class="fas fa-tasks"></i> Assignments
+                </li>
+                <li class="menu-item student-only" data-section="grades">
+                    <i class="fas fa-chart-line"></i> Grades
+                </li>
+                <li class="menu-item teacher-only" data-section="students">
+                    <i class="fas fa-user-graduate"></i> Students
+                </li>
+                <li class="menu-item teacher-only" data-section="gradebook">
+                    <i class="fas fa-book"></i> Gradebook
+                </li>
+                <li class="menu-item parent-only" data-section="children">
+                    <i class="fas fa-child"></i> Children
+                </li>
+                <li class="menu-item parent-only" data-section="meetings">
+                    <i class="fas fa-calendar-alt"></i> PTA Meetings
+                </li>
+                <li class="menu-item admin-only" data-section="users">
+                    <i class="fas fa-users-cog"></i> User Management
+                </li>
+                <li class="menu-item admin-only" data-section="subjects">
+                    <i class="fas fa-book-open"></i> Subjects
+                </li>
+                <li class="menu-item admin-only" data-section="config">
+                    <i class="fas fa-cogs"></i> Configuration
+                </li>
+                <li class="menu-item" data-section="settings">
+                    <i class="fas fa-cog"></i> Settings
+                </li>
+                <li class="menu-item">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                </li> 
+            </ul>
+        </div>
 
-.logo {
-    display: flex;
-    align-items: center;
-    font-size: 1.5rem;
-    font-weight: bold;
-}
+        <!-- Hero Section -->
+        <section class="hero" id="hero">
+            <section class="hero-section">
+                <div class="text-content">
+                    <h1>TrackMySuccess</h1>
+                    <p>
+                        TrackMySuccess is dedicated to enhancing the Competency-Based Curriculum (CBC)
+                        experience by providing a digital platform for students, teachers, and parents to
+                        track academic progress and performance effectively.
+                    </p>
+                    <div class="buttons">
+                        <a href="#" onclick="showRegisterPopup()" class="btn-pri">Get Started</a>
+                        <a href="#" class="btn-sec">Learn More →</a>
+                    </div>
+                </div>
+                <div class="image-content">
+                    <img src="cover.jpg" alt="TrackMySuccess Preview">
+                </div>
+            </section>
+            <div class="hero-features-heading">
+                <h2>Discover What TrackMySuccess Offers</h2>
+                <p>Our platform provides powerful tools for monitoring and improving student performance</p>
+            </div>
+            <div class="features-container">
+                <!-- The feature carousel will be dynamically created by JavaScript -->
+            </div>
+            <section class="why-c">
+                <div class="whycbc">
+                    <p><nav> What Makes TrackMySuccess Essential?</nav></p>
+                    <h3>Streamline CBC Assessment Efforts</h3>
+                    <ul>
+                        <li>Automate tedious record-keeping for teachers, making assessment tracking a breeze.</li>
+                        <li>Gain real-time insights into classroom assessments for enhanced transparency and efficiency.</li>
+                        <li>Effortlessly prepare end-of-term reports to facilitate meaningful discussions with parents.</li>
+                        <li>Ensure student records are securely stored and accessible anytime, eliminating risks of loss or damage.</li>
+                    </ul>
+                </div>
+                <div class="image-con">
+                    <img src="https://img.freepik.com/free-photo/woman-enjoying-sudoku-game-alone_23-2149072672.jpg?t=st=1741516814~exp=1741520414~hmac=e4b056be466e052cb1399c12ca0bafe12cffc4f2d7940fac037107af2b29cd2f&w=1380" alt="Ease the load Preview">
+                </div>
+            </section>
+            <section class="why-d">
+                <div class="image-con">
+                    <img src="track.png" alt="Ease the load Preview">
+                </div>            
+                <div class="whycbc">
+                    <ul>
+                        <h3>Effortless School Management with Parent Engagement</h3>
+                        <p>Seamlessly streamline school operations and foster active participation from parents in their child's education.</p>
+                        <p>Key Features:</p>
+                        <li>Automated Assessments – Simplify tracking and reporting for the CBC.</li>
+                        <li>Efficient School Administration – Reduce paperwork while enhancing record-keeping.</li>
+                        <li>Parental Engagement – Provide real-time access to student progress and performance.</li>
+                        <li>Time-Saving Reports – Instantly generate comprehensive learner insights.</li>
+                    </ul>
+                </div>
+            </section>
+            <section class="contact-section">
+                <div class="container">
+                    <img src="https://img.freepik.com/free-photo/focused-call-center-operator-typing-laptop_74855-4213.jpg?t=st=1742083303~exp=1742086903~hmac=89a985efe82411353ff53343daad1918bfd74d3ce1c91e837e19c544646b9b4c&w=1380" alt="Customer Support">
+                </div>
+                <div class="contact-inf">
+                    <h2>Your Success, Our Mission</h2>
+                    <div class="info-group">
+                        <div class="info-row">
+                            <div class="info">
+                                <span class="icon">🕒</span>
+                                <div>
+                                    <h4>Office Hours</h4>
+                                    <p>Monday-Sunday</p>
+                                    <p>8:00 am to 6:00 pm</p>
+                                </div>
+                            </div>
+                            <div class="info">
+                                <span class="icon">📍</span>
+                                <div>
+                                    <h4>Our Address</h4>
+                                    <p>Maseno Kisumu</p>
+                                    <p>Kenya</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info">
+                                <span class="icon">📞</span>
+                                <div>
+                                    <h4>Get In Touch</h4>
+                                    <p>+254114470441</p>
+                                    <p>+254768241871</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="community">
+                <div class="comm">
+                    <h1> Elevate Learning with Us</h1>
+                    <p>
+                        Sign up today to track student progress, revolutionize <br>
+                        academic success and parental engagement.
+                    </p>
+                    <div class="button-s">
+                        <a href="#" onclick="showRegisterPopup()" class="btn-rimary">Sign Up Now</a>
+                        <a href="#" class="btn-second">Learn More →</a>
+                    </div>
+                </div>
+                <div class="image-c">
+                    <img src="https://img.freepik.com/premium-photo/proud-pupil-showing-test-result-camera_13339-162163.jpg?w=740" alt="Community Image">
+                </div>
+            </section>
+        </section>
+        <p></p>
+        
+        <section class="D-section"> 
+            <!-- About Section -->
+            <section id="aboutSection" class="content-section">
+                <h2>About Us</h2>
+                <div class="about-content">
+                    <div class="about-card">
+                        <h3>Our Mission</h3>
+                        <p>TrackMySuccess is dedicated to enhancing the educational experience by providing a comprehensive platform for tracking and improving student performance in the Competency-Based Curriculum.</p>
+                    </div>
+                    <div class="about-card">
+                        <h3>Our Vision</h3>
+                        <p>We envision a future where every student has access to personalized learning resources and feedback, tailored to their unique learning style and pace.</p>
+                    </div>
+                    <div class="about-card">
+                        <h3>Our Team</h3>
+                        <p>Our team consists of educators, developers, and designers passionate about transforming education through technology.</p>
+                    </div>
+                </div>
+            </section>
+        </section>
 
-.logo img {
-    height: auto;
-    max-height: 120px; /* Ensure the logo is responsive */
-}
-
-.navbar ul {
-    list-style: none;
-    display: flex;
-    gap: 1.5rem;
-}
-
-.navbar ul li {
-    cursor: pointer;
-    padding: 0.5rem 0.8rem;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-}
-
-.navbar ul li:hover,
-.navbar ul li.active {
-    color: var(--secondary-color);
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* App Container Layout */
-.app-container {
-    display: flex;
-    flex-direction: column; /* Changed to column for easier centering */
-    align-items: center;
-    min-height: calc(100vh - 60px);
+        <!-- Analytics Section -->
+        <section id="analyticsSection" class="content-section">
+            <h2>Analytics</h2>
+            <div class="analytics-content">
+                <div class="analytics-card">
+                    <h3>Platform Overview</h3>
+                    <p>Explore our platform analytics and insights on user engagement and performance metrics.</p>
+                </div>
+                <div class="chart-container">
+                    <h3>Usage Statistics</h3>
+                    <p>Detailed charts and visualizations coming soon.</p>
+                </div>
+            </div>
+        </section>
     
-}
+        <!-- Contact Section -->
+        <section id="contactSection" class="content-section">
+            <h2>Contact Us</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Get in Touch</h3>
+                    <p><i class="fas fa-phone"></i> Phone: +254114470441</p>
+                    <p><i class="fas fa-envelope"></i> Email: support@trackmysuccess.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Address: 123 Education Drive, Maseno, Kenya</p>
+                    <p><i class="fab fa-facebook"></i> Facebook: TrackMySuccess</p>
+                </div>
+                <div class="contact-form">
+                    <h3>Send us a Message</h3>
+                    <form id="contactForm">
+                        <input type="text" placeholder="Your Name" required>
+                        <input type="email" placeholder="Your Email" required>
+                        <textarea placeholder="Your Message" rows="5" required></textarea>
+                        <button type="submit" class="btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
 
-/* Sidebar */
-.sidebar {
-    width: 250px;
-    background-color: #fff;
-    border-right: 1px solid var(--border-color);
-    padding: 1.5rem 0;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
-}
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Dashboard Section -->
+            <section id="dashboardSection" class="content-section active">
+                <div id="dashboard"> </div>
+            </section> 
 
-.user-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 1.5rem;
-}
+            <!-- Profile Section -->
+            <section id="profileSection" class="content-section">
+                <h2>My Profile</h2>
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="profile-info">
+                            <h3 id="profileName">John Doe</h3>
+                            <p id="profileRole">Student</p>
+                            <p id="profileEmail">john@example.com</p>
+                        </div>
+                    </div>
+                    <div class="profile-details" id="profileDetails">
+                        <div class="detail-group">
+                            <h4>Personal Information</h4>
+                            <div class="detail-row">
+                                <span class="detail-label">Full Name:</span>
+                                <span class="detail-value" id="profileFullName">John Doe</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Date of Birth:</span>
+                                <span class="detail-value" id="profileDob">January 1, 2000</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Contact:</span>
+                                <span class="detail-value" id="profileContact">+123-456-7890</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Address:</span>
+                                <span class="detail-value" id="profileAddress">123 School St, Education City</span>
+                            </div>
+                        </div>
+                        <div class="detail-group student-only">
+                            <h4>Academic Information</h4>
+                            <div class="detail-row">
+                                <span class="detail-label">Class:</span>
+                                <span class="detail-value">10A</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Admission Date:</span>
+                                <span class="detail-value">September 1, 2022</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Student ID:</span>
+                                <span class="detail-value">STD20220001</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="btn-primary" onclick="showEditProfilePopup()">Edit Profile</button>
+                        <button class="btn-secondary" onclick="showChangePasswordPopup()">Change Password</button>
+                    </div>
+                </div>
+            </section>
 
-.avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background-color: var(--primary-light);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 0.8rem;
-    margin-left: 20px;
-}
+            <section id="assignmentsSection" class="content-section student-only">
+                <h2>My Assignments</h2>
+                <div class="assignments-list">
+                    <div class="assignment-card">
+                        <div class="assignment-header">
+                            <h3>Mathematics Assignment</h3>
+                            <span class="badge pending">Pending</span>
+                        </div>
+                        <p>Complete exercises on quadratic equations</p>
+                        <div class="assignment-meta">
+                            <span><i class="fas fa-calendar-alt"></i> Due: May 15, 2023</span>
+                            <span><i class="fas fa-user"></i> Teacher: Ms. Johnson</span>
+                        </div>
+                        <div class="assignment-actions">
+                            <button class="btn-primary">Submit</button>
+                            <button class="btn-secondary">View Details</button>
+                        </div>
+                    </div>
+                    <div class="assignment-card">
+                        <div class="assignment-header">
+                            <h3>Science Project</h3>
+                            <span class="badge completed">Completed</span>
+                        </div>
+                        <p>Research and presentation on renewable energy sources</p>
+                        <div class="assignment-meta">
+                            <span><i class="fas fa-calendar-alt"></i> Due: May 10, 2023</span>
+                            <span><i class="fas fa-user"></i> Teacher: Mr. Smith</span>
+                        </div>
+                        <div class="assignment-actions">
+                            <button class="btn-secondary">View Feedback</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-.avatar i {
-    font-size: 3rem;
-    color: var(--text-light);
-}
+            <section id="gradesSection" class="content-section student-only">
+                <h2>My Grades</h2>
+                <div class="grades-overview">
+                    <div class="overall-gpa">
+                        <div class="gpa-circle">
+                            <span>3.8</span>
+                        </div>
+                        <p>Overall GPA</p>
+                    </div>
+                    <div class="grade-stats">
+                        <div class="stat-item">
+                            <h3>85%</h3>
+                            <p>Average Score</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>92%</h3>
+                            <p>Best Subject</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>72%</h3>
+                            <p>Lowest Subject</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="subject-grades">
+                    <h3>Grades by Subject</h3>
+                    <table class="grades-table">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Midterm</th>
+                                <th>Final</th>
+                                <th>Assignments</th>
+                                <th>Total</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Mathematics</td>
+                                <td>82%</td>
+                                <td>88%</td>
+                                <td>85%</td>
+                                <td>85%</td>
+                                <td>A-</td>
+                            </tr>
+                            <tr>
+                                <td>Science</td>
+                                <td>90%</td>
+                                <td>94%</td>
+                                <td>92%</td>
+                                <td>92%</td>
+                                <td>A</td>
+                            </tr>
+                            <tr>
+                                <td>English</td>
+                                <td>78%</td>
+                                <td>84%</td>
+                                <td>80%</td>
+                                <td>81%</td>
+                                <td>B+</td>
+                            </tr>
+                            <tr>
+                                <td>History</td>
+                                <td>70%</td>
+                                <td>75%</td>
+                                <td>72%</td>
+                                <td>72%</td>
+                                <td>C+</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="chart-container">
+                    <canvas id="gradesChart"></canvas>
+                </div>
+            </section>
 
-.user-info p {
-    margin: 0.2rem 0;
-}
+            <!-- Teacher-specific sections -->
+            <section id="studentsSection" class="content-section teacher-only">
+                <h2>My Students</h2>
+                <div class="class-filter">
+                    <select id="classFilter">
+                        <option value="all">All Classes</option>
+                        <option value="10A">Class 10A</option>
+                        <option value="10B">Class 10B</option>
+                        <option value="11A">Class 11A</option>
+                    </select>
+                    <button class="btn-primary">Filter</button>
+                </div>
+                <div class="students-grid" id="studentsGrid">
+                    <!-- Students will be dynamically generated by JavaScript -->
+                </div>
 
-.user-info p:first-of-type {
-    font-weight: bold;
-    font-size: 1.2rem;
-}
+                <script>
+                // Sample student data - can be replaced with API data later
+                const students = [
+                    { name: "Alice Johnson", class: "10A", performance: "excellent" },
+                    { name: "Bob Smith", class: "10A", performance: "good" },
+                    { name: "Charlie Brown", class: "10B", performance: "average" },
+                    { name: "Diana Williams", class: "11A", performance: "excellent" },
+                    { name: "Ethan Davis", class: "11A", performance: "good" }
+                ];
 
-.sidebar-menu {
-    list-style: none;
-    padding: 0;
-    align-items: center; /* Vertically center the items */
+                // Generate student cards
+                document.addEventListener('DOMContentLoaded', function() {
+                    const grid = document.getElementById('studentsGrid');
+                    if (grid) {
+                        let html = '';
+                        students.forEach(student => {
+                            html += `
+                            <div class="student-card">
+                                <div class="student-avatar">
+                                    <i class="fas fa-user-graduate"></i>
+                                </div>
+                                <h3>${student.name}</h3>
+                                <p>Class: ${student.class}</p>
+                                <p>Performance: <span class="${student.performance}">${student.performance.charAt(0).toUpperCase() + student.performance.slice(1)}</span></p>
+                                <div class="student-actions">
+                                    <button class="btn-primary">View Profile</button>
+                                    <button class="btn-secondary">Send Message</button>
+                                </div>
+                            </div>`;
+                        });
+                        grid.innerHTML = html;
+                    }
+                });
+                </script>
+            </section>
 
-}
+            <section id="gradebookSection" class="content-section teacher-only">
+                <h2>Gradebook</h2>
+                <div class="gradebook-controls">
+                    <div class="gradebook-filters">
+                        <select id="classGradebookFilter">
+                            <option value="10A">Class 10A</option>
+                            <option value="10B">Class 10B</option>
+                            <option value="11A">Class 11A</option>
+                        </select>
+                        <select id="subjectGradebookFilter">
+                            <option value="Math">Mathematics</option>
+                            <option value="Science">Science</option>
+                            <option value="English">English</option>
+                            <option value="History">History</option>
+                        </select>
+                        <select id="termGradebookFilter">
+                            <option value="Term1">Term 1</option>
+                            <option value="Term2">Term 2</option>
+                            <option value="Term3">Term 3</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary">
+                        <i class="fas fa-file-export"></i> Export Grades
+                    </button>
+                </div>
+                <div class="gradebook-table-container">
+                    <table class="gradebook-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Assignment 1</th>
+                                <th>Assignment 2</th>
+                                <th>Midterm</th>
+                                <th>Final Project</th>
+                                <th>Final Exam</th>
+                                <th>Overall</th>
+                                <th>Grade</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Alice Johnson</td>
+                                <td><input type="number" value="85" min="0" max="100"></td>
+                                <td><input type="number" value="90" min="0" max="100"></td>
+                                <td><input type="number" value="88" min="0" max="100"></td>
+                                <td><input type="number" value="92" min="0" max="100"></td>
+                                <td><input type="number" value="89" min="0" max="100"></td>
+                                <td>89%</td>
+                                <td>A</td>
+                                <td>
+                                    <button class="btn-sm btn-primary">Save</button>
+                                    <button class="btn-sm btn-secondary">Notes</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Bob Smith</td>
+                                <td><input type="number" value="78" min="0" max="100"></td>
+                                <td><input type="number" value="82" min="0" max="100"></td>
+                                <td><input type="number" value="75" min="0" max="100"></td>
+                                <td><input type="number" value="80" min="0" max="100"></td>
+                                <td><input type="number" value="84" min="0" max="100"></td>
+                                <td>80%</td>
+                                <td>B+</td>
+                                <td>
+                                    <button class="btn-sm btn-primary">Save</button>
+                                    <button class="btn-sm btn-secondary">Notes</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="gradebook-analytics">
+                    <h3>Class Performance Analytics</h3>
+                    <div class="analytics-cards">
+                        <div class="analytics-card">
+                            <h4>Class Average</h4>
+                            <p>84%</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Highest Score</h4>
+                            <p>92%</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Lowest Score</h4>
+                            <p>75%</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="classPerformanceChart"></canvas>
+                    </div>
+                </div>
+            </section>
 
-.menu-item {
-    padding: 0.8rem 1.5rem;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
+            <!-- Parent-specific sections -->
+            <section id="childrenSection" class="content-section parent-only">
+                <h2>My Children</h2>
+                <div class="children-list">
+                    <div class="child-card">
+                        <div class="child-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="child-info">
+                            <h3>John Doe</h3>
+                            <p>Class: 10A</p>
+                            <p>Overall Grade: A-</p>
+                            <p>Attendance: 95%</p>
+                        </div>
+                        <div class="child-performance">
+                            <div class="performance-chart">
+                                <canvas id="childPerformanceChart1"></canvas>
+                            </div>
+                        </div>
+                        <div class="child-actions">
+                            <button class="btn-primary">View Details</button>
+                            <button class="btn-secondary">Contact Teacher</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="recent-alerts">
+                    <h3>Recent Alerts</h3>
+                    <div class="alert-item">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <div class="alert-content">
+                            <h4>Low Attendance</h4>
+                            <p>John missed 3 days of school this month.</p>
+                            <span class="alert-date">May 10, 2023</span>
+                        </div>
+                    </div>
+                    <div class="alert-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="alert-content">
+                            <h4>Excellent Performance</h4>
+                            <p>John scored 92% in the Science exam.</p>
+                            <span class="alert-date">May 5, 2023</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-.menu-item i {
-    margin-right: 0.8rem;
-    font-size: 1.2rem;
-    width: 20px;
-    text-align: center;
-}
+            <section id="meetingsSection" class="content-section parent-only">
+                <h2>PTA Meetings</h2>
+                <div class="upcoming-meetings">
+                    <h3>Upcoming Meetings</h3>
+                    <div class="meeting-card">
+                        <div class="meeting-date">
+                            <div class="date-box">
+                                <span class="month">May</span>
+                                <span class="day">15</span>
+                            </div>
+                        </div>
+                        <div class="meeting-details">
+                            <h4>Term 2 Progress Review</h4>
+                            <p><i class="fas fa-clock"></i> 3:00 PM - 5:00 PM</p>
+                            <p><i class="fas fa-map-marker-alt"></i> School Auditorium</p>
+                            <p>Discuss student progress and upcoming events</p>
+                        </div>
+                        <div class="meeting-actions">
+                            <button class="btn-primary">Confirm Attendance</button>
+                            <button class="btn-secondary">Set Reminder</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="past-meetings">
+                    <h3>Past Meetings</h3>
+                    <table class="meetings-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Topic</th>
+                                <th>Teacher</th>
+                                <th>Attended</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>April 10, 2023</td>
+                                <td>Term 1 Review</td>
+                                <td>Ms. Johnson</td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><button class="btn-sm btn-secondary">View Notes</button></td>
+                            </tr>
+                            <tr>
+                                <td>February 15, 2023</td>
+                                <td>Initial Assessment</td>
+                                <td>Mr. Smith</td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><button class="btn-sm btn-secondary">View Notes</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
-.menu-item:hover {
-    background-color: rgba(46, 125, 50, 0.1);
-    color: var(--primary-color);
-}
+            <!-- Admin-specific sections -->
+            <section id="usersSection" class="content-section admin-only">
+                <h2>User Management</h2>
+                <div class="user-management-controls">
+                    <div class="user-search">
+                        <input type="text" placeholder="Search users...">
+                        <button class="btn-primary"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="user-filters">
+                        <select id="roleFilter">
+                            <option value="all">All Roles</option>
+                            <option value="teacher">Teachers</option>
+                            <option value="student">Students</option>
+                            <option value="parent">Parents</option>
+                            <option value="admin">Admins</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary"><i class="fas fa-user-plus"></i> Add New User</button>
+                </div>
+                <div class="users-table-container">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Last Login</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>001</td>
+                                <td>John Smith</td>
+                                <td>Teacher</td>
+                                <td>john@example.com</td>
+                                <td><span class="badge active">Active</span></td>
+                                <td>May 10, 2023</td>
+                                <td>
+                                    <button class="btn-sm btn-primary"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-sm btn-secondary"><i class="fas fa-lock"></i></button>
+                                    <button class="btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>002</td>
+                                <td>Alice Johnson</td>
+                                <td>Student</td>
+                                <td>alice@example.com</td>
+                                <td><span class="badge active">Active</span></td>
+                                <td>May 11, 2023</td>
+                                <td>
+                                    <button class="btn-sm btn-primary"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-sm btn-secondary"><i class="fas fa-lock"></i></button>
+                                    <button class="btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>003</td>
+                                <td>Bob Williams</td>
+                                <td>Parent</td>
+                                <td>bob@example.com</td>
+                                <td><span class="badge inactive">Inactive</span></td>
+                                <td>April 29, 2023</td>
+                                <td>
+                                    <button class="btn-sm btn-primary"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-sm btn-secondary"><i class="fas fa-lock"></i></button>
+                                    <button class="btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
-.menu-item.active {
-    background-color: var(--primary-color);
-    color: var(--text-light);
-}
+            <section id="subjectsSection" class="content-section admin-only">
+                <h2>Subject Management</h2>
+                <div class="subject-controls">
+                    <button class="btn-primary"><i class="fas fa-plus"></i> Add Subject</button>
+                </div>
+                <div class="subjects-grid" id="subjectsGrid">
+                    <!-- Subjects will be dynamically generated -->
+                </div>
 
-/* Content Area */
-.content-area {
-    flex: 1;
-    padding: 1.5rem;
-    overflow-y: auto;
-}
+                <script>
+                // Sample subject data - can be replaced with API data later
+                const subjects = [
+                    { name: "Mathematics", icon: "calculator", type: "math", teachers: 5, classes: 10 },
+                    { name: "Science", icon: "flask", type: "science", teachers: 4, classes: 8 },
+                    { name: "English", icon: "book", type: "english", teachers: 3, classes: 6 }
+                ];
 
-/* Notifications in Sidebar */
-.sidebar .notifications {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.8rem 1.5rem;
-    cursor: pointer;
-}
+                // Generate subject cards
+                document.addEventListener('DOMContentLoaded', function() {
+                    const grid = document.getElementById('subjectsGrid');
+                    if (grid) {
+                        let html = '';
+                        subjects.forEach(subject => {
+                            html += `
+                            <div class="subject-card">
+                                <div class="subject-icon ${subject.type}">
+                                    <i class="fas fa-${subject.icon}"></i>
+                                </div>
+                                <h3>${subject.name}</h3>
+                                <p>Teachers: ${subject.teachers}</p>
+                                <p>Classes: ${subject.classes}</p>
+                                <div class="subject-actions">
+                                    <button class="btn-sm btn-primary"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>`;
+                        });
+                        grid.innerHTML = html;
+                    }
+                });
+                </script>
+            </section>
 
-.sidebar .notifications i {
-    font-size: 1.2rem;
-    color: var(--text-gray);
-}
+            <section id="configSection" class="content-section admin-only">
+                <h2>System Configuration</h2>
+                <div class="config-card">
+                    <h3>Academic Year</h3>
+                    <div class="config-item">
+                        <label>Current Academic Year:</label>
+                        <select>
+                            <option>2022-2023</option>
+                            <option>2023-2024</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label>Term:</label>
+                        <select>
+                            <option>Term 1</option>
+                            <option>Term 2</option>
+                            <option>Term 3</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary">Save Changes</button>
+                </div>
+                <div class="config-card">
+                    <h3>Grade Scale</h3>
+                    <table class="config-table">
+                        <thead>
+                            <tr>
+                                <th>Grade</th>
+                                <th>Minimum %</th>
+                                <th>Maximum %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>A</td>
+                                <td><input type="number" value="90" min="0" max="100"></td>
+                                <td><input type="number" value="100" min="0" max="100"></td>
+                            </tr>
+                            <tr>
+                                <td>B</td>
+                                <td><input type="number" value="80" min="0" max="100"></td>
+                                <td><input type="number" value="89" min="0" max="100"></td>
+                            </tr>
+                            <tr>
+                                <td>C</td>
+                                <td><input type="number" value="70" min="0" max="100"></td>
+                                <td><input type="number" value="79" min="0" max="100"></td>
+                            </tr>
+                            <tr>
+                                <td>D</td>
+                                <td><input type="number" value="60" min="0" max="100"></td>
+                                <td><input type="number" value="69" min="0" max="100"></td>
+                            </tr>
+                            <tr>
+                                <td>F</td>
+                                <td><input type="number" value="0" min="0" max="100"></td>
+                                <td><input type="number" value="59" min="0" max="100"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="btn-primary">Save Changes</button>
+                </div>
+            </section>
 
-.sidebar .notifications .badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: var(--danger-color);
-    color: white;
-    width: 20px;
-    height: 20px;
-    border-radius: 80%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-}
+            <!-- Settings Section (common for all roles) -->
+            <section id="settingsSection" class="content-section">
+                <h2>Settings</h2>
+                <div class="settings-card">
+                    <h3>Account Settings</h3>
+                    <div class="setting-item">
+                        <label>Email Notifications:</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="emailNotifications" checked>
+                            <label for="emailNotifications"></label>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>SMS Alerts:</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="smsAlerts">
+                            <label for="smsAlerts"></label>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>Two-Factor Authentication:</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="twoFactorAuth">
+                            <label for="twoFactorAuth"></label>
+                        </div>
+                    </div>
+                    <button class="btn-primary">Save Preferences</button>
+                </div>
+            </section>
+        </div>
+    </div>
 
+    <!-- Edit Profile Popup -->
+    <div class="overlay" id="editProfileOverlay">
+        <div class="popup">
+            <h2>Edit Profile</h2>
+            <input type="text" id="editFullName" placeholder="Full Name">
+            <input type="email" id="editEmail" placeholder="Email Address">
+            <input type="text" id="editDob" placeholder="Date of Birth">
+            <input type="text" id="editContact" placeholder="Contact Number">
+            <input type="text" id="editAddress" placeholder="Address">
+            <button onclick="saveProfileChanges()">Save Changes</button>
+            <button class="cancel-btn" onclick="hideEditPopups()">Cancel</button>
+        </div>
+    </div>
 
-
-.notifications {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.6rem;
-    background-color: #fff;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: var(--danger-color);
-    color: white;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-}
-
-/* Content Sections */
-.content-section {
-    display: none;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.content-section.active {
-    display: block;
-    background-color: #d4f5d42a;
-}
-
-.content-section h2 {
-    color: var(--primary-color);
-    padding: 70px;
-    text-align:center;
-    margin-bottom: 80px;
-    border: none;
+    <!-- Change Password Popup -->
+    <div class="overlay" id="changePasswordOverlay">
+        <div class="popup">
+            <h2>Change Password</h2>
+            <input type="password" id="currentPassword" placeholder="Current Password">
+            <input type="password" id="newPassword" placeholder="New Password">
+            <input type="password" id="confirmPassword" placeholder="Confirm New Password">
+            <button onclick="changePassword()">Change Password</button>
+            <button class="cancel-btn" onclick="hideEditPopups()">Cancel</button>
+        </div>
+    </div>
     
-}
-.D-section h2{
-    background-color: #aa872e87; 
-    margin: -24px -24px 75px -24px;
-    border:none;
-    color: white;
-    font-weight: bolder;
-    font-family: 'Times New Roman', Times, serif;
-}
-.D-section{
-    background-color:rgba(26, 174, 204, 0.093);
-}
-/* Common card styles */
-.card-base {
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    text-align: center;
-}
-
-/* Cards container */
-.cards, .analytics-cards {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-/* Dashboard Cards */
-.card {
-    composes: card-base;
-    flex: 1;
-    border-top: 4px solid var(--primary-color);
-}
-
-.card strong, .analytics-card p {
-    display: block;
-    font-size: 2rem;
-    margin-top: 0.8rem;
-    color: var(--primary-color);
-    font-weight: bold;
-}
-
-/* Chart Container */
-.chart-container {
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    margin-top: 1.5rem;
-}
-
-
-/* Analytics Cards */
-.analytics-card {
-    flex: 1;
-    composes: card-base;
-}
-
-.analytics-card h4 {
-    margin-bottom: 0.5rem;
-    color: var(--text-gray);
-}
-
-/* Profile Section */
-.profile-card {
-    background-color: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.profile-header {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 2rem;
-    display: flex;
-    align-items: center;
-}
-
-.profile-avatar {
-    width: 100px;
-    height: 100px;
-    background-color: white;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 2rem;
-}
-
-.profile-avatar i {
-    font-size: 4rem;
-    color: var(--primary-color);
-}
-
-.profile-info h3 {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-}
-
-.profile-details {
-    padding: 2rem;
-}
-
-.detail-group {
-    margin-bottom: 2rem;
-}
-
-.detail-group h4 {
-    color: var(--primary-color);
-    margin-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 0.5rem;
-}
-
-.detail-row {
-    display: flex;
-    margin-bottom: 0.8rem;
-}
-
-.detail-label {
-    font-weight: bold;
-    width: 150px;
-}
-
-.profile-actions {
-    padding: 0 2rem 2rem;
-    display: flex;
-    gap: 1rem;
-}
-
-/* Buttons */
-.btn-primary, .btn-secondary {
-    text-decoration: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 4px;
-    font-size: 1rem;
-    cursor: pointer;
-    border: none;
-    transition: all 0.3s ease;
-}
-
-.btn-primary {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: var(--primary-dark);
-}
-
-.btn-secondary {
-    color: var(--primary-color);
-    background-color: transparent;
-    border: 1px solid var(--primary-color);
-}
-
-.btn-secondary:hover {
-    background-color: rgba(46, 125, 50, 0.1);
-}
-
-.btn-danger {
-    background-color: var(--danger-color);
-    color: white;
-}
-
-.btn-sm {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.9rem;
-}
-
-/* Student-specific Styles */
-.assignments-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.assignment-card {
-    background-color: white;
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    border-left: 4px solid var(--primary-color);
-}
-
-.assignment-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.badge.pending {
-    background-color: var(--warning-color);
-    color: var(--text-dark);
-    padding: 0.3rem 0.8rem;
-    border-radius: 4px;
-    position: static;
-    width: auto;
-    height: auto;
-}
-
-.badge.completed {
-    background-color: var(--success-color);
-    color: white;
-    padding: 0.3rem 0.8rem;
-    border-radius: 4px;
-    position: static;
-    width: auto;
-    height: auto;
-}
-
-.assignment-meta {
-    margin: 1rem 0;
-    display: flex;
-    gap: 2rem;
-    color: var(--text-gray);
-}
-
-.assignment-actions {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-/* Grades Section */
-.grades-overview {
-    display: flex;
-    gap: 2rem;
-    margin-bottom: 2rem;
-}
-
-.overall-gpa {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.gpa-circle {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
-
-.grade-stats {
-    display: flex;
-    gap: 2rem;
-    flex: 1;
-}
-
-.stat-item {
-    flex: 1;
-    composes: card-base;
-}
-
-.stat-item h3 {
-    font-size: 2rem;
-    color: var(--primary-color);
-    margin-bottom: 0.5rem;
-}
-
-.grades-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1.5rem;
-}
-
-.grades-table th, .grades-table td {
-    border: 1px solid var(--border-color);
-    padding: 0.8rem;
-}
-
-.grades-table th {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.grades-table tr:nth-child(even) {
-    background-color: rgba(46, 125, 50, 0.05);
-}
-
-/* Teacher-specific Styles */
-.class-filter {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.class-filter select {
-    padding: 0.6rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-}
-
-.class-filter button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.class-filter .filter-status {
-    font-size: 0.85rem;
-    background-color: rgba(255, 255, 255, 0.2);
-    padding: 2px 8px;
-    border-radius: 12px;
-    margin-left: 5px;
-}
-
-.students-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
-}
-
-.student-card {
-    composes: card-base;
-    text-align: center;
-}
-
-.student-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background-color: var(--primary-light);
-    margin: 0 auto 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.student-avatar i {
-    font-size: 2.5rem;
-    color: white;
-}
-
-.student-card h3 {
-    margin-bottom: 0.5rem;
-}
-
-.student-card p {
-    margin-bottom: 0.5rem;
-    color: var(--text-gray);
-}
-
-.excellent {
-    color: var(--success-color);
-    font-weight: bold;
-}
-
-.good {
-    color: var(--info-color);
-    font-weight: bold;
-}
-
-.average {
-    color: var(--warning-color);
-    font-weight: bold;
-}
-
-.student-actions {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-/* Gradebook Styles */
-.gradebook-controls {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1.5rem;
-}
-
-.gradebook-filters {
-    display: flex;
-    gap: 1rem;
-}
-
-.gradebook-filters select {
-    padding: 0.6rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-}
-
-.gradebook-table-container {
-    overflow-x: auto;
-}
-
-.gradebook-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.gradebook-table th, .gradebook-table td {
-    border: 1px solid var(--border-color);
-    padding: 0.8rem;
-}
-
-.gradebook-table th {
-    background-color: var(--primary-color);
-    color: white;
-    position: sticky;
-    top: 0;
-}
-
-.gradebook-table input {
-    width: 60px;
-    padding: 0.4rem;
-    text-align: center;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-}
-
-.analytics-cards {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-
-.analytics-card {
-    flex: 1;
-    composes: card-base;
-}
-
-.analytics-card h4 {
-    margin-bottom: 0.5rem;
-    color: var(--text-gray);
-}
-
-/* Parent-specific Styles */
-.children-list {
-    margin-bottom: 2rem;
-}
-
-.child-card {
-    composes: card-base;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-}
-
-.child-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background-color: var(--primary-light);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.child-avatar i {
-    font-size: 2.5rem;
-    color: white;
-}
-
-.child-info {
-    flex: 1;
-    min-width: 200px;
-}
-
-.child-info h3 {
-    margin-bottom: 0.8rem;
-}
-
-.child-info p {
-    margin-bottom: 0.5rem;
-    color: var(--text-gray);
-}
-
-.child-performance {
-    flex: 1;
-    min-width: 300px;
-}
-
-.child-actions {
-    width: 100%;
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.recent-alerts {
-    margin-top: 2rem;
-}
-
-.alert-item {
-    display: flex;
-    gap: 1rem;
-    composes: card-base;
-    margin-bottom: 1.5rem;
-}
-
-.alert-item i {
-    font-size: 2rem;
-}
-
-.alert-item i.fa-exclamation-circle {
-    color: var(--warning-color);
-}
-
-.alert-item i.fa-check-circle {
-    color: var(--success-color);
-}
-
-.alert-content {
-    flex: 1;
-}
-
-.alert-content h4 {
-    margin-bottom: 0.5rem;
-}
-
-.alert-date {
-    color: var(--text-gray);
-    font-size: 0.9rem;
-}
-
-/* PTA Meetings Styles */
-.upcoming-meetings {
-    margin-bottom: 2rem;
-}
-
-.meeting-card {
-    composes: card-base;
-    display: flex;
-    gap: 1.5rem;
-}
-
-.meeting-date {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.date-box {
-    width: 80px;
-    background-color: var(--primary-color);
-    color: white;
-    border-radius: 8px;
-    overflow: hidden;
-    text-align: center;
-}
-
-.date-box .month {
-    background-color: var(--primary-dark);
-    display: block;
-    padding: 0.3rem;
-}
-
-.date-box .day {
-    display: block;
-    font-size: 2rem;
-    padding: 0.5rem;
-}
-
-.meeting-details {
-    flex: 1;
-}
-
-.meeting-details h4 {
-    margin-bottom: 0.8rem;
-}
-
-.meeting-details p {
-    margin-bottom: 0.5rem;
-    color: var(--text-gray);
-}
-
-.meeting-details i {
-    margin-right: 0.5rem;
-}
-
-.meeting-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    justify-content: center;
-}
-
-.meetings-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.meetings-table th, .meetings-table td {
-    border: 1px solid var(--border-color);
-    padding: 0.8rem;
-}
-
-.meetings-table th {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.meetings-table i.fa-check {
-    color: var(--success-color);
-}
-
-/* Admin-specific Styles */
-.user-management-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.user-search {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.user-search input {
-    padding: 0.6rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    width: 250px;
-}
-
-.user-filters select {
-    padding: 0.6rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-}
-
-.users-table-container {
-    overflow-x: auto;
-}
-
-.users-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.users-table th, .users-table td {
-    border: 1px solid var(--border-color);
-    padding: 0.8rem;
-}
-
-.users-table th {
-    background-color: var(--primary-color);
-    color: white;
-    position: sticky;
-    top: 0;
-}
-
-.badge.active {
-    background-color: var(--success-color);
-    color: white;
-    padding: 0.3rem 0.8rem;
-    border-radius: 4px;
-    position: static;
-    width: auto;
-    height: auto;
-}
-
-.badge.inactive {
-    background-color: var(--text-gray);
-    color: white;
-    padding: 0.3rem 0.8rem;
-    border-radius: 4px;
-    position: static;
-    width: auto;
-    height: auto;
-}
-
-/* Subject Management */
-.subjects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-}
-
-.subject-card {
-    composes: card-base;
-    text-align: center;
-}
-
-.subject-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    margin: 0 auto 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.subject-icon.math {
-    background-color: #4CAF50;
-}
-
-.subject-icon.science {
-    background-color: #2196F3;
-}
-
-.subject-icon.english {
-    background-color: #9C27B0;
-}
-
-.subject-icon i {
-    font-size: 2.5rem;
-    color: white;
-}
-
-.subject-actions {
-    margin-top: 1rem;
-    display: flex;
-    justify-content: center;
-    gap: 0.8rem;
-}
-
-/* Configuration Section */
-.config-card {
-    composes: card-base;
-    margin-bottom: 1.5rem;
-}
-
-.config-card h3 {
-    margin-bottom: 1.5rem;
-    color: var(--primary-color);
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 0.5rem;
-}
-
-.config-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.config-item label {
-    width: 200px;
-    font-weight: bold;
-}
-
-.config-item select {
-    padding: 0.6rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    width: 200px;
-}
-
-.config-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 1.5rem;
-}
-
-.config-table th, .config-table td {
-    border: 1px solid var(--border-color);
-    padding: 0.8rem;
-}
-
-.config-table th {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.config-table input {
-    width: 60px;
-    padding: 0.4rem;
-    text-align: center;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-}
-
-/* Settings Section */
-.settings-card {
-    composes: card-base;
-}
-
-.setting-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 0;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 24px;
-}
-
-.toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.toggle-switch label {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 34px;
-}
-
-.toggle-switch label:before {
-    position: absolute;
-    content: "";
-    height: 16px;
-    width: 16px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
-}
-
-.toggle-switch input:checked + label {
-    background-color: var(--primary-color);
-}
-
-.toggle-switch input:checked + label:before {
-    transform: translateX(26px);
-}
-
-/* Popup Styles */
-.overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: white; /* Darker overlay for better contrast */
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-}
-
-.popup-container {
-    display: flex;
-    width: 95%;
-    max-width: 900px;
-    background-color: #ffffff;
-    overflow: hidden;
-}
-.popup-image {
-    flex: 1;
-    background-color: #f0f0f0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.popup-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-.popup {
-    flex: 1;
-    padding: 2rem;
-    text-align: center;
-}
-
-.popup h2 {
-    margin-top: 90px;
-    margin-bottom: 0.5rem;
-    color: var(--primary-color);
-    font-size: 1.4rem;
-    padding: 5px;
-}
-
-.popup input, .popup select {
-    width: 100%;
-    padding: 0.8rem;
-    margin-bottom: 0.8rem;
-    border: 1px solid var(--primary-light);
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-.popup input:focus, .popup select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 5px rgba(46, 125, 50, 0.3);
-}
-
-.popup button {
-    width: 100%;
-    padding: 0.8rem;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    margin-bottom: 30px;
-    margin-top: 1px;
-}
-
-.popup button:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(162, 194, 6, 0.842);
-}
-
-.popup a {
-    color: var(--primary-color);
-    text-decoration: none;
-    display: block;
-    padding-top:20px 0px 0px 0px;
-}
-
-.popup a:hover {
-    text-decoration: underline;
-}
-.reg{
-    padding: 5px;
-    margin-top: -30px;
-}
-
-.cancel-btn {
-    width: 100%;
-    padding: 5px 0px 0px 0px ;
-    background-color: var(--danger-color);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
+    <footer>
+        <div class="footer-icons">
+            <a href="https://example.com/link1" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.facebook.com/share/15mwWqysUs/" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+            <a href="https://www.linkedin.com/in/francis-ndemo-8781602bb" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
+            <a href="https://x.com/frank_ndemo?t=Kk6LTf57EDNe6HXQjeGklg&s=09" target="_blank"><i class="fa-brands fa-twitter"></i></a>
+            <a href="https://example.com/link4" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+        </div>
+        <div class="footer-text">
+            © 2025 TrackMySuccess. Guiding Growth, Tracking Progress, Achieving Success.
+        </div>
+    </footer>
     
-}
-
-.cancel-btn:hover {
-    background-color: #d32f2f;
-}
-
-/* Hero Section */
-.hero-section {
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Centered content */
-    padding: 20px;
-    min-height: 60vh;
-    background-color:#034108;
-    
-}
-
-.text-content {
-    flex: 1;
-    max-width: 600px; /* Max width to ensure it doesn't stretch too much */
-}
-
-.text-content h1 {
-    font-size: 3rem;
-    color: white;
-    margin-bottom: 10px;
-    margin-top: 0px;
-    margin-left: 30px;
-}
-
-.text-content p {
-    font-size: 1.2rem;
-    color: white;
-    margin: 20px 0;
-    margin-top: 0px;
-}
-
-.buttons {
-    margin-top: 60px;
-}
-.btn-pri{
-    margin-left: 31px;
-    background-color: white;
-    color: #1E1E1E;
-    padding: 10px 20px;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-}
-.btn-pri:hover{
-    background-color: rgba(179, 241, 23, 0.737);
-}
-.btn-sec{
-    text-decoration: none;
-    padding: 10px 20px;
-    border: none;
-    transition: background-color 0.3s ease;
-    background: none;
-}
-.btn-sec:hover{
-    background-color: rgba(179, 241, 23, 0.737);
-
-}
-.image-content {
-    flex: 1; 
-    overflow: hidden;
-}
-
-.image-content img {
-    width: 100%;
-    height: auto; /* Maintain aspect ratio */
-    border-radius: 10px;
-}
-
-/* Features */
-.hero-features-heading {
-    text-align: center;
-    margin: 40px auto 20px;
-    max-width: 800px;
-}
-
-.hero-features-heading h2 {
-    color: var(--primary-color);
-    font-size: 2rem;
-    margin-bottom: 10px;
-}
-
-.hero-features-heading p {
-    color: var(--text-gray);
-    font-size: 1.1rem;
-}
-
-.features-container {
-    position: relative;
-    width: 100%;
-    height: 300px;
-    overflow: hidden;
-    padding: 20px;
-    margin: 20px 0;
-    background-color: rgba(46, 125, 50, 0.05);
-}
-
-.feature-carousel {
-    display: flex;
-    position: absolute;
-    left: 0;
-    gap: 20px;
-    transition: transform 0.5s ease;
-}
-
-@keyframes scrollFeatures {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(calc(-270px * 5)); /* Move by width of 5 features */
-    }
-}
-
-.feature {
-    background: rgb(255, 255, 255);
-    border-radius: 10px;
-    padding: 20px;
-    width: 250px;
-    min-width: 250px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease-in-out;
-    text-align: center;
-}
-
-.feature:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-}
-
-.feature img {
-    width: 60px;
-    margin-bottom: 15px;
-    display: block;
-    margin: 0 auto 15px;
-    background-color: #d4f5d4;
-    padding: 10px;
-    border-radius: 50%;
-}
-
-.feature h3 {
-    color: var(--primary-color);
-    font-size: 18px;
-    margin-bottom: 10px;
-}
-
-.feature p {
-    font-size: 14px;
-    color: var(--text-gray);
-}
-
-/* About Section Styles */
-.about-content {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.about-card {
-    flex: 1;
-    min-width: 300px;
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    border-top: 4px solid var(--primary-color);
-}
-
-.about-card h3 {
-    color: var(--primary-color);
-    margin-bottom: 1rem;
-}
-.about-card:hover{
-    transform: translateY(-10px);
-    box-shadow: 0 8px 20px rgba(171, 204, 9, 0.725);
-    font-weight:600;
-    transition-duration: 0.6s;
-}
-/* Analytics Section Styles */
-.analytics-content {
-    margin-bottom: 2rem;
-}
-
-/* Contact Section Styles */
-.contact-content {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    margin-bottom: 2rem;
-}
-.contact-info:hover{
-    transform: translateY(-10px);
-    box-shadow: 0 8px 20px rgba(171, 204, 9, 0.725);
-    font-weight:600;
-    transition-duration: 0.3s;
-}
-.contact-form:hover{
-    transform: translateY(-10px);
-    box-shadow: 0 8px 20px rgba(171, 204, 9, 0.725);
-    font-weight:600;
-    transition-duration: 0.3s;
-}
-
-.contact-info, .contact-form {
-    flex: 1;
-    min-width: 300px;
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.contact-info h3, .contact-form h3 {
-    color: var(--primary-color);
-    margin-bottom: 1.5rem;
-}
-
-.contact-info p {
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-}
-
-.contact-info i {
-    width: 25px;
-    color: var(--primary-color);
-    margin-right: 0.5rem;
-}
-
-.contact-form form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.contact-form input, .contact-form textarea {
-    padding: 0.8rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-family: inherit;
-}
-
-.contact-form textarea {
-    resize: vertical;
-}
-
-/* Active navbar link */
-.navbar ul li.active {
-    color: var(--secondary-color);
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-    .popup-container {
-        flex-direction: column;
-        width: 90%;
-    }
-
-    .popup-image {
-        display: none; /* Hide image on smaller screens */
-    }
-
-    .popup {
-        padding: 1.5rem;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .navbar ul {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .hero-section {
-        flex-direction: column;
-        padding: 30px;
-    }
-
-    .text-content, .image-content, .whycbc {
-        max-width: 100%;
-        margin: 0 auto; /* Center content */
-    }
-
-    .why-c, .why-d {
-        flex-direction: column; /* Stack on smaller screens */
-        align-items: center;
-    }
-
-    .image-con img {
-        max-width: 100%; /* Responsive images */
-    }
-
-    .container img {
-        width: 100%; /* Fully responsive for smaller devices */
-    }
-}
-
-@media screen and (max-width: 1200px) {
-    .app-container {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        width: 100%;
-        border-right: none;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .sidebar-menu {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .menu-item {
-        padding: 0.8rem;
-    }
-
-    .content-area {
-        padding: 1rem;
-    }
-
-    .grades-overview {
-        flex-direction: column;
-    }
-
-    .child-card {
-        flex-direction: column;
-    }
-
-    .meeting-card {
-        flex-direction: column;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .navbar ul {
-        display: none;
-    }
-
-    .cards {
-        flex-direction: column;
-    }
-
-    .user-management-controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .gradebook-controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .hero-section {
-        flex-direction: column;
-        text-align: center;
-        padding: 30px;
-    }
-
-    .text-content {
-        max-width: 100%;
-        margin-bottom: 30px;
-    }
-
-    .features-container {
-        height: auto;
-    }
-
-    .feature-group {
-        position: static;
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-        transform: none !important;
-    }
-
-    .group-2 {
-        display: none;
-    }
-}
-
-/* Role-specific element visibility */
-.student-only, .teacher-only, .parent-only, .admin-only {
-    display: none;
-}
-.why-c{
-    display: flex;
-    align-items: center; 
-    justify-content: center; /* Center everything */
-    padding: 20px;
-    margin: 0 auto; /* Center sections on wider screens */
-    max-width: 1200px; /* Max width for larger displays */
-    gap: 40px; /* Space between text and image */
-}
-.why-d{
-    display: flex;
-    align-items: center; 
-    justify-content: center; /* Center everything */
-    padding: 20px;
-    margin: 0 auto; /* Center sections on wider screens */
-    max-width: 1200px; /* Max width for larger displays */
-    gap: 40px; /* Space between text and image */
-}
-.whycbc{
-    flex: 2;
-    max-width: 480px; /* Control the width */
-}
-.whycbc h3 {
-    font-size: 2rem;
-    color: var(--text-dark);
-    margin-bottom: 30px;
-}
-
-.whycbc p {
-    font-size: 1.2rem;
-    color: var(--text-gray);
-    margin: 20px 0;
-}
-.whycbc ul li{
-    margin: 40px;
-}
-ul li {
-    font-family:'Times New Roman', Times, serif ;
-    font-size: 18px;
-    font-weight: 550;
-    line-height: 1.6;
-}
-.whycbc nav {
-    color: green;
-    font-weight: bold;
-    font-size: 1.1rem;
-}
-.image-con{
-    flex: 1;
-    display: flex;
-    justify-content: center; 
-    
-}
-.image-con img{
-    width: 100%;
-    height: auto; /* Ensure it scales properly */
-    max-width: 400px; /* Prevent images from getting too large */
-    border-radius: 10px;
-}
-
-.contact-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 100vh;
-    background: rgba(206, 245, 206, 0.689);
-    padding: 20px;
-    margin-top: 10px;
-    
-}
-
-.container {
-    flex: 0 0 48%; 
-    height: 100%;
-    overflow: hidden;
-    border-radius: 30px;
-    width: 40%;
-}
-
-.container img {
-    
-    object-fit: cover;
-    box-shadow: 0 20px 12px rgb(0, 0, 0); /* Floating shadow */
-    top: 100%; /* Places the reflection below the image */
-    width: 100%;
-    height: 85%;
-    border-radius: 20px;
-    margin-top: 40px;
-}
-.contact-inf {
-    flex: 1; 
-    padding-left: 100px; 
-}
-
-h2 {
-    font-size: 32px;
-    margin-bottom: 20px;
-    padding: 20px 10px 20px;
-}
-.contact-inf h2{
-    color: black;
-}
-
-.info-group {
-    display: flex;
-    flex-direction: column;
-    gap: 20px; /* Space between rows */
-}
-
-.info-row {
-    display: flex;
-    gap: 40px; /* Space between items in a row */
-}
-
-.info {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px; /* Space between icon and text */
-}
-
-.icon {
-    font-size: 24px;
-}
-
-.info h4 {
-    margin: 0;
-    color: #444;
-    font-weight: 400;
-    font-size: 17px;
-}
-
-p {
-    margin: 5px 0;
-    color: #666;
-    font-size: 16px;
-    padding-left: 30px; /* Indent text below the icon */
-}
-.community {
-    margin: 31px;
-    padding: 60px 20px;
-    background-color: #034108;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 93vh;
-    position: relative;
-    overflow: hidden; 
-    border-radius: 20px;
-}
-
-.comm {
-    flex: 1.5;
-    max-width: 60%;
-    text-align: center;
-    z-index: 1; /* Ensure text is above the image */
-}
-
-.comm h1 {
-    font-size: 2.5rem;
-    color: white; 
-    margin-bottom: 20px;
-    margin-top: 0;
-    font-weight: bold;
-}
-
-.comm p {
-    font-size: 1.1rem;
-    color: rgba(245, 245, 245, 0.955);
-    margin: 10px 0;
-    line-height: 1.6;
-    text-align:center;
-}
-
-.button-s {
-    margin-top: 30px;
-    display:block;
-    gap: 20px;
-    
-}
-
-.btn-rimary {
-    background-color:white;
-    color: black;
-    padding: 10px 30px 10px 30px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-}
-
-.btn-rimary:hover {
-    background-color: rgba(179, 241, 23, 0.737);
-}
-
-.btn-second {
-    background-color: transparent;
-    color: white;
-    padding: 10px 60px 10px 60px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-}
-
-.btn-second:hover {
-    background-color: rgba(179, 241, 23, 0.737); 
-}
-
-.image-c {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 40%;
-    height: 100%;
-    overflow: hidden;
-}
-
-.image-c img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 0;
-    box-shadow: none;
-    margin-top: 40px;
-    margin-left: 40px;
-}
-footer {
-    background-color: #3a884182;
-    padding: 20px;
-    border-top: 1px solid var(--border-color);
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    text-align: center;
-    position:relative;
-}
-
-.footer-icons a {
-    margin: 0 10px;
-    color: black;
-    text-decoration: none;
-    font-size: 24px;
-}
-
-.footer-text {
-    margin-top: 10px;
-    font-size: 18px;
-    font-weight: 400;
-    color: black;
-}
-/*javascript */
-.upcoming-deadlines h3{
-    color: green;
-    font-weight:400;
-}
-.upcoming-deadlines h4{
-    color: rgba(0, 128, 0, 0.45);
-}
-.timeline-date{
-    color: rgba(21, 10, 239, 0.925);
-}
+</body>
+</html>
