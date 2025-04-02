@@ -13,6 +13,36 @@ function showLoginPopup() {
     document.getElementById('loginOverlay').style.display = 'flex';
 }
 
+function showPasswordResetPopup() {
+  document.getElementById('passwordReseOverlay').style.display = 'flex';
+  document.getElementById('emailInputState').style.display = 'block';
+  document.getElementById('successState').style.display = 'none';
+  document.getElementById('resetEmail').value = '';
+  document.getElementById('emailError').style.display = 'none';
+}
+
+function hideResetPopup() {
+  document.getElementById('passwordReseOverlay').style.display = 'none';
+}
+
+function startPasswordReset() {
+  const email = document.getElementById('resetEmail').value;
+  const errorElement = document.getElementById('emailError');
+  
+  if (!email || !email.includes('@') || !email.includes('.')) {
+      errorElement.style.display = 'block';
+      return;
+  }
+  
+  errorElement.style.display = 'none';
+  
+  document.getElementById('emailInputState').style.display = 'none';
+  document.getElementById('successState').style.display = 'block';
+  document.getElementById('confirmedEmail').textContent = email;
+  
+  console.log('Password reset requested for:', email);
+}
+
 function showRegisterPopup() {
     document.getElementById('loginOverlay').style.display = 'none';
     document.getElementById('registerOverlay').style.display = 'flex';
@@ -296,7 +326,7 @@ function loadDashboardContent() {
             </section>`;
     } else if (currentUser.role === "Parent") {
         dashboardContent = `
-            <h2>Parent Dashboard</h2>
+            <h2 class=dash>Parent Dashboard</h2>
             <section class="cards">
                 <div class="card">
                     <h3>Child's Name</h3>
@@ -1982,4 +2012,3 @@ function deleteSubject(subjectId) {
         }
     }
 }
-
