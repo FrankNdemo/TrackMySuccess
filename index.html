@@ -31,7 +31,7 @@
         <div class="overlay" id="loginOverlay">
             <div class="popup-container">
                 <div class="popup-image">
-                    <img src="https://img.freepik.com/free-vector/congratulations-card-template-with-man-graduation-gown_1308-3010.jpg?t=st=1743174913~exp=1743178513~hmac=aabc093b17aa8273c7a0b4e2b3c3c83ee23e4f06aa4cc386265b2167381a4c5c&w=900" alt="Login Image">
+                    <img src="https://img.freepik.com/free-vector/congratulations-card-template-with-man-graduation-gown_1308-3010.jpg" alt="Login Image">
                 </div>
                 <div class="popup">
                     <h2>Login</h2>
@@ -45,11 +45,41 @@
                         <option value="Admin">Admin</option>
                     </select>
                     <button onclick="login()">Login</button>
-                    <a  class="reg" href="#" onclick="showRegisterPopup()">Register</a>
+                    <div class="auth-links"> 
+                        <a class="reg" href="#" onclick="showRegisterPopup()">Register</a>
+                        <a href="#" onclick="showPasswordResetPopup()">Forgot password?</a>
+                    </div>
                     <button class="cancel-btn" onclick="hidePopups()">Cancel</button>
                 </div>
             </div> 
         </div>
+
+<!-- Password Reset Popup -->
+<div class="overlay" id="passwordReseOverlay" style="display: none;">
+    <div class="rese-popup">
+      <h2 id="reseTitle">Reset password</h2>
+      <p class="rese-subtitle">We'll email you a password reset link.</p>
+      
+      <!-- Email Input State -->
+      <div id="emailInputState">
+        <div class="input-group">
+          <input type="email" id="resetEmail" placeholder="Enter your account email">
+          <p class="error-message" id="emailError" style="display: none;">Please enter a valid email</p>
+        </div>
+        <button class="reset-btn" onclick="startPasswordReset()">Start password reset</button>
+      </div>
+      
+      <!-- Success State (hidden initially) -->
+      <div id="successState" style="display: none;">
+        <div class="email-confirmation">
+          <span id="confirmedEmail">likentnerg@gmail.com</span>
+          <div class="success-check">✓ Email sent</div>
+        </div>
+        <button class="close-btn" onclick="hideResetPopup()">Close</button>
+      </div>
+    </div>
+  </div>
+        
     <div class="overlay" id="registerOverlay">
     <div class="popup-container">
         <div class="popup-image">
@@ -65,7 +95,7 @@
                 <option value="Teacher">Teacher</option>
                 <option value="Student">Student</option>
                 <option value="Parent">Parent</option>
-                <option value="Admin">Admin</option>
+                <option value="Admin"></option>
             </select>
             
             <div id="dynamicFields"></div>
@@ -293,59 +323,62 @@
         </div>
     </section>
 </section>
-        <div class="sidebar" id="sidebar">
-            <div class="user-info" id="userInfo">
-                <div class="avatar">
-                    <i class="fas fa-user-circle"></i>
-                </div>
-                <p id="sidebarUsername">Username</p>
-                <p id="sidebarRole">Role</p>
+<div class="sidebar-container">
+    <div class="sidebar" id="sidebar">
+        <div class="user-info" id="userInfo">
+            <div class="avatar">
+                <i class="fas fa-user-circle"></i>
             </div>
-            <ul class="sidebar-menu">
-                <li class="menu-item active" data-section="dashboard">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </li>
-                <li class="menu-item" data-section="profile">
-                    <i class="fas fa-user"></i> Profile
-                </li>
-                <li class="menu-item student-only" data-section="assignments">
-                    <i class="fas fa-tasks"></i> Assignments
-                </li>
-                <li class="menu-item student-only" data-section="grades">
-                    <i class="fas fa-chart-line"></i> Grades
-                </li>
-                <li class="menu-item teacher-only" data-section="students">
-                    <i class="fas fa-user-graduate"></i> Students
-                </li>
-                <li class="menu-item teacher-only" data-section="gradebook">
-                    <i class="fas fa-book"></i> Gradebook
-                </li>
-                <li class="menu-item parent-only" data-section="children">
-                    <i class="fas fa-child"></i> Children
-                </li>
-                <li class="menu-item parent-only" data-section="meetings">
-                    <i class="fas fa-calendar-alt"></i> PTA Meetings
-                </li>
-                <li class="menu-item admin-only" data-section="users">
-                    <i class="fas fa-users-cog"></i> User Management
-                </li>
-                <li class="menu-item admin-only" data-section="subjects">
-                    <i class="fas fa-book-open"></i> Subjects
-                </li>
-                <li class="menu-item admin-only" data-section="config">
-                    <i class="fas fa-cogs"></i> Configuration
-                </li>
-                <li class="menu-item" data-section="settings">
-                    <i class="fas fa-cog"></i> Settings
-                </li>
-                <li class="menu-item">
-                    <div class="notifications">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge">3</span>
-                    </div>
-                </li> 
-            </ul>
+            <p id="sidebarUsername">Username</p>
+            <p id="sidebarRole">Role</p>
         </div>
+        <ul class="sidebar-menu">
+            <li class="menu-item active" data-section="dashboard">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </li>
+            <li class="menu-item" data-section="profile">
+                <i class="fas fa-user"></i> Profile
+            </li>
+            <li class="menu-item student-only" data-section="assignments">
+                <i class="fas fa-tasks"></i> Assignments
+            </li>
+            <li class="menu-item student-only" data-section="grades">
+                <i class="fas fa-chart-line"></i> Grades
+            </li>
+            <li class="menu-item teacher-only" data-section="students">
+                <i class="fas fa-user-graduate"></i> Students
+            </li>
+            <li class="menu-item teacher-only" data-section="gradebook">
+                <i class="fas fa-book"></i> Gradebook
+            </li>
+            <li class="menu-item parent-only" data-section="children">
+                <i class="fas fa-child"></i> Children
+            </li>
+            <li class="menu-item parent-only" data-section="meetings">
+                <i class="fas fa-calendar-alt"></i> PTA Meetings
+            </li>
+            <li class="menu-item admin-only" data-section="users">
+                <i class="fas fa-users-cog"></i> User Management
+            </li>
+            <li class="menu-item admin-only" data-section="subjects">
+                <i class="fas fa-book-open"></i> Subjects
+            </li>
+            <li class="menu-item admin-only" data-section="config">
+                <i class="fas fa-cogs"></i> Configuration
+            </li>
+            <li class="menu-item" data-section="settings">
+                <i class="fas fa-cog"></i> Settings
+            </li>
+            <li class="menu-item">
+                <div class="notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+            </li> 
+        </ul>
+    </div>
+</div>
+       
         <div class="content-area">
             <section id="dashboardSection" class="content-section active">
                 <div id="dashboard"> </div>
